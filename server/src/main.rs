@@ -24,9 +24,11 @@ fn main() {
     let mut stream_clone = stream.try_clone().expect("clone failed...");
     thread::spawn(move || loop {
         let mut full_msg: [u8; 1] = [0; 1];
-        stream_clone.read(&mut full_msg).unwrap();
-        println!("Read: {}", full_msg.len());
-        client.publish(tx_topic.as_str(), QoS::AtLeastOnce, false, full_msg);
+        let size = stream_clone.read(&mut full_msg).unwrap();
+        if size == 0 {
+            continue;
+        }
+        println!("Read: {:?} {}", full_msg, size);
     });
 
     // Iterate to poll the eventloop for connection progress

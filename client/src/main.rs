@@ -27,8 +27,11 @@ fn main() {
         let tx_topic_clone = tx_topic.clone();
         thread::spawn(move || loop {
             let mut full_msg: [u8; 1] = [0; 1];
-            stream_clone.read(&mut full_msg).unwrap();
-            println!("Read: {}", full_msg.len());
+            let size = stream_clone.read(&mut full_msg).unwrap();
+            if size == 0 {
+                continue;
+            }
+            println!("Read: {:?} {}", full_msg, size);
             client.publish(tx_topic_clone.as_str(), QoS::AtLeastOnce, false, full_msg);
         });
 
