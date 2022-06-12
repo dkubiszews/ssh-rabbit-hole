@@ -23,8 +23,9 @@ fn main() {
 
     let mut stream_clone = stream.try_clone().expect("clone failed...");
     thread::spawn(move || loop {
-        let mut full_msg: [u8; 1024] = [0; 1024];
+        let mut full_msg: [u8; 1] = [0; 1];
         stream_clone.read(&mut full_msg).unwrap();
+        println!("Read: {}", full_msg.len());
         client.publish(tx_topic.as_str(), QoS::AtLeastOnce, false, full_msg);
     });
 
@@ -35,7 +36,7 @@ fn main() {
             Ok(ok_result) => {
                 if let rumqttc::Event::Incoming(incomming_request) = ok_result {
                     if let rumqttc::Packet::Publish(publish_packet) = incomming_request {
-                        println!("Notification publish_packet = {:?}", publish_packet.payload);
+                        //println!("Notification publish_packet = {:?}", publish_packet.payload);
                         stream.write(&publish_packet.payload);
                     }
                 }

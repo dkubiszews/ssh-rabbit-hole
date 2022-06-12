@@ -26,7 +26,7 @@ fn main() {
         let mut stream_clone = stream.try_clone().expect("clone failed...");
         let tx_topic_clone = tx_topic.clone();
         thread::spawn(move || loop {
-            let mut full_msg: [u8; 1024] = [0; 1024];
+            let mut full_msg: [u8; 1] = [0; 1];
             stream_clone.read(&mut full_msg).unwrap();
             println!("Read: {}", full_msg.len());
             client.publish(tx_topic_clone.as_str(), QoS::AtLeastOnce, false, full_msg);
